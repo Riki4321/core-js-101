@@ -28,8 +28,20 @@
  *      .catch((error) => console.log(error.message)) // 'Error: Wrong parameter is passed!
  *                                                    //  Ask her again.';
  */
-function willYouMarryMe(/* isPositiveAnswer */) {
-  throw new Error('Not implemented');
+function willYouMarryMe(isPositiveAnswer) {
+  // throw new Error('Not implemented');
+
+  return new Promise((resolved, rejected) => {
+    if (typeof isPositiveAnswer === 'boolean') {
+      if (isPositiveAnswer) {
+        resolved('Hooray!!! She said "Yes"!');
+      } else {
+        resolved('Oh no, she said "No".');
+      }
+    } else {
+      rejected(new Error('Wrong parameter is passed! Ask her again.'));
+    }
+  });
 }
 
 
@@ -48,8 +60,9 @@ function willYouMarryMe(/* isPositiveAnswer */) {
  *    })
  *
  */
-function processAllPromises(/* array */) {
-  throw new Error('Not implemented');
+function processAllPromises(array) {
+  // throw new Error('Not implemented');
+  return Promise.all(array);
 }
 
 /**
@@ -71,8 +84,13 @@ function processAllPromises(/* array */) {
  *    })
  *
  */
-function getFastestPromise(/* array */) {
-  throw new Error('Not implemented');
+function getFastestPromise(array) {
+  // throw new Error('Not implemented');
+  return new Promise((resolved, rejected) => {
+    Promise.race(array)
+      .then((res) => resolved(res))
+      .catch((err) => rejected(err));
+  });
 }
 
 /**
@@ -92,8 +110,31 @@ function getFastestPromise(/* array */) {
  *    });
  *
  */
-function chainPromises(/* array, action */) {
-  throw new Error('Not implemented');
+function chainPromises(array, action) {
+  // throw new Error('Not implemented');
+  let sum;
+
+  return new Promise((resolved) => {
+    function recursive(arr) {
+      arr.splice(0, 1)[0].then((res) => {
+        if (sum === undefined) {
+          sum = res;
+        } else {
+          sum = action(sum, res);
+        }
+      })
+        .catch(() => {})
+        .finally(() => {
+          if (arr.length) {
+            recursive(arr);
+          } else {
+            resolved(sum);
+          }
+        });
+    }
+
+    recursive(array);
+  });
 }
 
 module.exports = {
