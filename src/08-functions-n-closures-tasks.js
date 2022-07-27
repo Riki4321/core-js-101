@@ -101,8 +101,24 @@ function memoize(/* func */) {
  * }, 2);
  * retryer() => 2
  */
-function retry(/* func, attempts */) {
-  throw new Error('Not implemented');
+function retry(func, attempts) {
+  // throw new Error('Not implemented');
+
+  const f = (myf, myatt) => () => {
+    let atts = 0;
+
+    while (atts < myatt) {
+      try {
+        return myf();
+      } catch (error) {
+        atts += 1;
+      }
+    }
+
+    return 0;
+  };
+
+  return f(func, attempts);
 }
 
 
@@ -129,8 +145,17 @@ function retry(/* func, attempts */) {
  * cos(3.141592653589793) ends
  *
  */
-function logger(/* func, logFunc */) {
-  throw new Error('Not implemented');
+function logger(func, logFunc) {
+  // throw new Error('Not implemented');
+  const wrapper = (f, lf) => (...args) => {
+    const stringified = args.map((a) => JSON.stringify(a)).join(',');
+    lf(`${f.name}(${stringified}) starts`);
+    const res = f(...args);
+    lf(`${f.name}(${stringified}) ends`);
+    return res;
+  };
+
+  return wrapper(func, logFunc);
 }
 
 
@@ -147,8 +172,11 @@ function logger(/* func, logFunc */) {
  *   partialUsingArguments(fn, 'a','b','c')('d') => 'abcd'
  *   partialUsingArguments(fn, 'a','b','c','d')() => 'abcd'
  */
-function partialUsingArguments(/* fn, ...args1 */) {
-  throw new Error('Not implemented');
+function partialUsingArguments(fn, ...args1) {
+  // throw new Error('Not implemented');
+  const f = (func, a1) => (...a2) => [...a1, ...a2].join('');
+
+  return f(fn, args1);
 }
 
 
@@ -169,8 +197,14 @@ function partialUsingArguments(/* fn, ...args1 */) {
  *   getId4() => 7
  *   getId10() => 11
  */
-function getIdGeneratorFunction(/* startFrom */) {
-  throw new Error('Not implemented');
+function getIdGeneratorFunction(startFrom) {
+  // throw new Error('Not implemented');
+  let counter = (startFrom - 1);
+
+  return function a() {
+    counter += 1;
+    return counter;
+  };
 }
 
 
